@@ -40,19 +40,3 @@ def client(reset_db):
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def auth_headers(client):
-    res = client.post("/api/auth/register", json={
-        "email": "test@example.com",
-        "password": "testpassword",
-        "full_name": "Test User",
-        "org_name": "Test Org"
-    })
-    if res.status_code != 200:
-        raise RuntimeError(f"Register failed {res.status_code}: {res.text}")
-    data = res.json()
-    token = data.get("access_token", "")
-    org_id = data.get("org_id", None)
-    return {"Authorization": f"Bearer {token}"}, org_id

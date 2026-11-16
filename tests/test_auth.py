@@ -15,7 +15,8 @@ def test_register_new_user(client):
         "org_name": "New Org"
     })
     assert res.status_code == 200, f"Register failed: {res.status_code} {res.text}"
-    assert "access_token" in res.json()
+    data = res.json()
+    assert "access_token" in data
 
 
 def test_register_duplicate_email(client):
@@ -51,11 +52,18 @@ def test_login_invalid(client):
     assert res.status_code == 401
 
 
-def test_me_authenticated(client, auth_headers):
-    headers, _ = auth_headers
-    res = client.get("/api/auth/me", headers=headers)
-    assert res.status_code == 200, f"Me failed: {res.status_code} {res.text}"
-    assert res.json()["email"] == "test@example.com"
+def test_me_authenticated(client):
+    reg = client.post("/api/auth/register", json={
+        "email": "me@example.com",
+        "password": "password123",
+        "full_name": "Me User",
+        "org_name": "Me Org"
+    })
+    assert reg.status_code == 200, f"Register failed: {reg.text}"
+    token = reg.json()["access_token"]
+    res = client.get("/api/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert res.status_code == 200, f"Me failed: {res.text}"
+    assert res.json()["email"] == "me@example.com"
 
 
 def test_me_unauthenticated(client):
