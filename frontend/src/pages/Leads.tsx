@@ -90,7 +90,7 @@ export default function Leads() {
                         {lead.ai_classification}
                       </span>
                     )}
-                    {lead.ai_classification && <Bot size={12} className="text-gray-400 dark:text-gray-500 ml-1" title="AI-scored" />}
+                    {lead.ai_classification && <Bot size={12} className="text-gray-400 dark:text-gray-500 ml-1" aria-label="AI-scored" />}
                   </div>
                 </Td>
                 <Td>{lead.source}</Td>
