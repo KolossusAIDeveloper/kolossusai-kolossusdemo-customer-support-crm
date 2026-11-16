@@ -28,6 +28,9 @@ COPY nginx-prod.conf /etc/nginx/sites-available/default
 # Supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Create log dirs and remove default nginx site that conflicts
+RUN mkdir -p /var/log/supervisor && rm -f /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
 EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
