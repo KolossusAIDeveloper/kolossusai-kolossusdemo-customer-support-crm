@@ -1,20 +1,35 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.config import settings
 from app.models.user import User
+import hashlib
+import hmac
+import os
+import base64
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def _hash_password(password: str, salt: bytes = None) -> str:
+    if salt is None:
+        salt = os.urandom(32)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 310000)
+    return base64.b64encode(salt + key).decode()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        data = base64.b64decode(hashed_password.encode())
+        salt = data[:32]
+        stored_key = data[32:]
+        key = hashlib.pbkdf2_hmac("sha256", plain_password.encode(), salt, 310000)
+        return hmac.compare_digest(key, stored_key)
+    except Exception:
+        return False
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    return _hash_password(password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
