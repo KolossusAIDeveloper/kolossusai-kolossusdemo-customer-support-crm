@@ -1,3 +1,9 @@
+import os
+os.environ.setdefault("DATABASE_URL", "sqlite:///./test.db")
+os.environ.setdefault("SECRET_KEY", "testsecretkey123changeme")
+os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+os.environ["PYTEST_CURRENT_TEST"] = "1"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine

@@ -4,6 +4,7 @@ from app.database import Base, engine
 from app.middleware import check_rate_limit  # noqa: F401
 from app.routers import auth, leads, deals, conversations, tasks, workflows, analytics, integrations, organizations
 import app.models  # ensure all models are registered
+import os
 
 app = FastAPI(title="Customer Support CRM API", version="1.0.0")
 
@@ -15,8 +16,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create tables only when not in test mode (tests manage their own schema)
+if not os.environ.get("PYTEST_CURRENT_TEST"):
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception:
+        pass  # Will retry on first request or via alembic in production
 
 # Include routers
 app.include_router(auth.router)

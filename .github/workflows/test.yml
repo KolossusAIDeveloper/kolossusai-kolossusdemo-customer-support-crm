@@ -5,6 +5,12 @@ on: [push]
 jobs:
   backend:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: sqlite:///./test.db
+      REDIS_URL: redis://localhost:6379/0
+      SECRET_KEY: testsecretkey123changeme
+      AI_PROVIDER: mock
+      PYTEST_CURRENT_TEST: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -12,11 +18,6 @@ jobs:
           python-version: '3.11'
       - run: pip install -r backend/requirements.txt
       - run: cd backend && python -m pytest ../tests/ -v --tb=short
-        env:
-          DATABASE_URL: sqlite:///./test.db
-          REDIS_URL: redis://localhost:6379/0
-          SECRET_KEY: testsecretkey123changeme
-          AI_PROVIDER: mock
 
   frontend:
     runs-on: ubuntu-latest
