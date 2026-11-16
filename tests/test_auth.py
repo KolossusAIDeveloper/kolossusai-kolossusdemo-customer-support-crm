@@ -1,6 +1,12 @@
 import pytest
 
 
+def test_health(client):
+    res = client.get("/api/health")
+    assert res.status_code == 200
+    assert res.json()["status"] == "ok"
+
+
 def test_register_new_user(client):
     res = client.post("/api/auth/register", json={
         "email": "newuser@example.com",
@@ -8,7 +14,7 @@ def test_register_new_user(client):
         "full_name": "New User",
         "org_name": "New Org"
     })
-    assert res.status_code == 200
+    assert res.status_code == 200, f"Register failed: {res.status_code} {res.text}"
     assert "access_token" in res.json()
 
 
@@ -32,10 +38,11 @@ def test_login_valid(client):
     client.post("/api/auth/register", json={
         "email": "login@example.com",
         "password": "password",
-        "full_name": "Login User"
+        "full_name": "Login User",
+        "org_name": "Login Org"
     })
     res = client.post("/api/auth/login", data={"username": "login@example.com", "password": "password"})
-    assert res.status_code == 200
+    assert res.status_code == 200, f"Login failed: {res.status_code} {res.text}"
     assert "access_token" in res.json()
 
 
@@ -47,16 +54,10 @@ def test_login_invalid(client):
 def test_me_authenticated(client, auth_headers):
     headers, _ = auth_headers
     res = client.get("/api/auth/me", headers=headers)
-    assert res.status_code == 200
+    assert res.status_code == 200, f"Me failed: {res.status_code} {res.text}"
     assert res.json()["email"] == "test@example.com"
 
 
 def test_me_unauthenticated(client):
     res = client.get("/api/auth/me")
     assert res.status_code == 401
-
-
-def test_health(client):
-    res = client.get("/api/health")
-    assert res.status_code == 200
-    assert res.json()["status"] == "ok"
