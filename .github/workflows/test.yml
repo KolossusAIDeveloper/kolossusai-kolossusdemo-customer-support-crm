@@ -13,19 +13,21 @@ jobs:
       PYTEST_CURRENT_TEST: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install test dependencies (no psycopg2/redis/celery needed for SQLite tests)
-        run: pip install -r backend/requirements-test.txt
-      - name: Run tests
-        run: cd backend && python -m pytest ../tests/ -v --tb=long -p no:warnings 2>&1 | tail -60
+      - run: pip install -q -r backend/requirements-test.txt
+      - run: cd backend && python -m pytest ../tests/ -x --tb=short -q
 
   frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: cd frontend && npm install && npm run build
+      - run: cd frontend && npm install --silent && npm run build
