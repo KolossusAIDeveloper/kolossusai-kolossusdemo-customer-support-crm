@@ -16,12 +16,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create tables only when not in test mode (tests manage their own schema)
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Create tables on startup (SQLite works without migrations; Postgres uses alembic in prod)
 if not os.environ.get("PYTEST_CURRENT_TEST"):
     try:
         Base.metadata.create_all(bind=engine)
-    except Exception:
-        pass  # Will retry on first request or via alembic in production
+        logger.info("Database tables created/verified successfully")
+    except Exception as e:
+        logger.error(f"Database init error: {e}")
+        raise  # Fail fast so the error is visible in logs
 
 # Include routers
 app.include_router(auth.router)

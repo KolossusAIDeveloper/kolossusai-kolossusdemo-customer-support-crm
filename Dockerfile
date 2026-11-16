@@ -28,8 +28,8 @@ COPY nginx-prod.conf /etc/nginx/sites-available/default
 # Supervisor config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Create log dirs and remove default nginx site that conflicts
-RUN mkdir -p /var/log/supervisor && rm -f /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+# Create log dirs, data dir for SQLite, and fix nginx site
+RUN mkdir -p /var/log/supervisor /app/data && rm -f /etc/nginx/sites-enabled/default && ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 EXPOSE 80
 

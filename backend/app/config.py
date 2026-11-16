@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
-    database_url: str = "postgresql://crmuser:crmpassword@localhost/crmdb"
+    database_url: str = "sqlite:////app/data/crm.db"
     redis_url: str = "redis://localhost:6379/0"
     secret_key: str = "supersecretkey123changeme"
     algorithm: str = "HS256"
