@@ -18,7 +18,16 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -q -r backend/requirements-test.txt
-      - run: cd backend && python -m pytest ../tests/ -x --tb=short -q
+      - name: Run backend tests
+        run: |
+          cd backend
+          python -m pytest ../tests/ -x --tb=short -q 2>&1 | tee /tmp/pytest_out.txt
+          echo "EXIT:$?" >> /tmp/pytest_out.txt
+      - name: Show test results (always)
+        if: always()
+        run: |
+          echo "=== TEST RESULTS ==="
+          cat /tmp/pytest_out.txt 2>/dev/null || echo "No test output"
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
