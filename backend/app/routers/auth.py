@@ -78,8 +78,12 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     db.add(log)
     db.commit()
 
+    # Get user's first org
+    member = db.query(OrganizationMember).filter(OrganizationMember.user_id == user.id).first()
+    org_id = member.organization_id if member else None
+
     token = create_access_token({"sub": user.id})
-    return Token(access_token=token)
+    return Token(access_token=token, org_id=org_id)
 
 
 @router.post("/login", response_model=Token)
@@ -98,8 +102,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     db.add(log)
     db.commit()
 
+    member = db.query(OrganizationMember).filter(OrganizationMember.user_id == user.id).first()
+    org_id = member.organization_id if member else None
+
     token = create_access_token({"sub": user.id})
-    return Token(access_token=token)
+    return Token(access_token=token, org_id=org_id)
 
 
 @router.get("/me", response_model=UserOut)

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
-from app.middleware import RateLimitMiddleware
+from app.middleware import check_rate_limit  # noqa: F401
 from app.routers import auth, leads, deals, conversations, tasks, workflows, analytics, integrations, organizations
 import app.models  # ensure all models are registered
 
@@ -14,7 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(RateLimitMiddleware, calls=200, period=60)
 
 # Create tables
 Base.metadata.create_all(bind=engine)

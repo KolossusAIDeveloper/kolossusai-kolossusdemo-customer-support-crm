@@ -17,6 +17,7 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+    org_id: Optional[str] = None
 
 
 class UserOut(BaseModel):

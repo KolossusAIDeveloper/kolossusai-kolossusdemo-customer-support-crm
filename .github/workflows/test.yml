@@ -15,7 +15,8 @@ jobs:
         env:
           DATABASE_URL: sqlite:///./test.db
           REDIS_URL: redis://localhost:6379/0
-          SECRET_KEY: testsecretkey
+          SECRET_KEY: testsecretkey123changeme
+          AI_PROVIDER: mock
 
   frontend:
     runs-on: ubuntu-latest
